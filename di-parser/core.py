@@ -80,7 +80,7 @@ class Section(DocumentItem):
             # If either of them are empty, we don't need a new line.
             seprator = ""
 
-        return self.section_type + "\n" + self.content + seprator + sub_content
+        return self.section_type + "：" + "\n" + self.content + seprator + sub_content
     
     @classmethod
     def from_node(cls, node: ET.Element) -> "Section":
@@ -91,7 +91,7 @@ class Section(DocumentItem):
         # Initial check.
         assert node.tag == "段落", "The node must be a paragraph."
 
-        section_type: str = node.attrib.get("段名")
+        section_type: str = node.attrib.get("段名").replace("：", "")
         content: str = ""
         sub_sequences: list[DocumentItem] = []
 
