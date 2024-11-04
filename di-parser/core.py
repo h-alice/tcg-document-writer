@@ -1,3 +1,4 @@
+import os
 import xml.etree.ElementTree as ET
 from typing import Optional
 from dataclasses import dataclass
@@ -150,3 +151,14 @@ class Document:
         
         return cls(document_type=document_type, organization=organization, date=date, subject=subject, description=description, act=act)
     
+def document_from_xml(path_or_string: str) -> Document:
+    """
+    Given a path or a string of the XML content, return a Document object.
+    """
+    if os.path.exists(path_or_string):
+        tree = ET.parse(path_or_string)
+        root = tree.getroot()
+    else:
+        root = ET.fromstring(path_or_string)
+    
+    return Document.from_node(root)
