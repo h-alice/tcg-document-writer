@@ -5,6 +5,14 @@ A parser for document object (*.di) files.
 - Parse a document object file (*.di) and extract the necessary information.
 - Provides a pretty-printed output of document content.
 
+## Usage
+```python
+from di_parser import document_from_xml
+with open('document/folder/1.di', 'r', encoding='utf-8') as f:
+    doc = document_from_xml(f)
+    print(doc)
+```
+
 ## Where to Find DI Files
 Tipically, DI files are located inside `%LOCALAPPDATA%\KdApp\DOC_DIR` directory.
 
