@@ -12,6 +12,15 @@ with open('document/folder/1.di', 'r', encoding='utf-8') as f:
     doc = document_from_xml(f)
     print(doc)
 ```
+```
+簽 | 數據治理中心 | 113年3月8日
+檢陳113年3月7日臺北大數據中心雙周會會議紀錄，簽請核示。
+說明：
+一、 旨揭會議為雙週例行性會議，簡報資料如附。
+二、 本次以目前專案進度（儀表板原始碼開放、道路坍塌預防分析、大語言模型研究、2024臺北春季程式設計節文案）討論，皆依進度執行。
+擬辦：
+會議紀錄由本中心與大數據中心同仁自行列管。
+```
 
 ## Where to Find DI Files
 Tipically, DI files are located inside `%LOCALAPPDATA%\KdApp\DOC_DIR` directory.
