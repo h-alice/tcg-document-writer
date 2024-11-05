@@ -1,1 +1,0 @@
-from core import document_from_xml

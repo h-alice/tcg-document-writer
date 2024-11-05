@@ -1,7 +1,9 @@
 import os
 import xml.etree.ElementTree as ET
-from typing import Optional
+from io import TextIOBase
+from typing import Optional, Union, IO
 from dataclasses import dataclass
+from pathlib import Path
 
 # Exception for unsupported document type.
 class UnsupportedDocumentType(Exception): ...
@@ -13,14 +15,14 @@ class DocumentItem:
     """
     sequence: str # The sequence number of the item.
     content: str # The text content of the item.
-    sub_sequence: list["DocumentItem"] # A list of sub items.
+    sub_sequence: tuple["DocumentItem", ...] # A list of sub items.
 
     def __init__(self, sequence: str, content: str, sub_sequence: list["DocumentItem"]):
         # Automatically trim trailing whitespaces.
         self.sequence = sequence.strip() 
         self.content = content.strip()
 
-        self.sub_sequence = sub_sequence
+        self.sub_sequence = tuple(sub_sequence)
 
     def __str__(self):
 
@@ -111,7 +113,7 @@ class Section(DocumentItem):
                     content = child.text
                 else:
                     content = ""
-                    
+
             elif child.tag == "條列":
                 sub_sequences.append(DocumentItem.from_node(child)) # Recursively parse the sub sequences.
         
@@ -165,14 +167,29 @@ class Document:
         
         return cls(document_type=document_type, organization=organization, date=date, subject=subject, description=description, act=act)
     
-def document_from_xml(path_or_string: str) -> Document:
+def document_from_xml(string_or_pathlike: Union[str, Path, IO[str]]) -> Document:
     """
     Given a path or a string of the XML content, return a Document object.
     """
-    if os.path.exists(path_or_string):
-        tree = ET.parse(path_or_string)
-        root = tree.getroot()
+    if isinstance(string_or_pathlike, Path): # If the input is a path-like object.
+        file_content = string_or_pathlike.read_text()
+        root = ET.fromstring(file_content)
+    
+    # If the input is a string, it may be either a path or the content itself.
+    elif isinstance(string_or_pathlike, str):
+        if os.path.exists(string_or_pathlike): # If the string is a path.
+            tree = ET.parse(string_or_pathlike)
+            root = tree.getroot()
+        else: # If the string is the XML content.
+            root = ET.fromstring(string_or_pathlike)
+
+    # If the input is a IO reader.
+    elif isinstance(string_or_pathlike, TextIOBase):
+        root = ET.fromstring(string_or_pathlike.read()) # Read the content and parse it.
+
+    # Not supported
     else:
-        root = ET.fromstring(path_or_string)
+        print(type(string_or_pathlike))
+        raise ValueError("The input must be either a string or a path-like object")
     
     return Document.from_node(root)
