@@ -3,6 +3,9 @@ import xml.etree.ElementTree as ET
 from typing import Optional
 from dataclasses import dataclass
 
+# Exception for unsupported document type.
+class UnsupportedDocumentType(Exception): ...
+
 @dataclass
 class DocumentItem:
     """
