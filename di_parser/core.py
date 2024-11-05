@@ -193,3 +193,14 @@ def document_from_xml(string_or_pathlike: Union[str, Path, IO[str]]) -> Document
         raise ValueError("The input must be either a string or a path-like object")
     
     return Document.from_node(root)
+
+def remove_redundant_words(text: str) -> str:
+    """
+    ## 八股文 is bad, remove 咬文嚼字.
+    """
+    ng_list = ["請", "核示", "函", "為", "申請", "辦理", "鑒核", "簽", "。", "，", "檢陳", "申辦", "申辦", "「", "」"]
+
+    for ng in ng_list:
+        text = text.replace(ng, "")
+
+    return text
