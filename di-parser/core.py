@@ -32,7 +32,7 @@ class DocumentItem:
         else: # If there's content, add a space between the sequence number and the content.
             full_content = f"{self.sequence} {self.content}"
 
-        # Recursively stringify the items in the sub sequence.
+        # Recursively stringify the items in the subSequence.
         sub_content = "\n".join([str(item) for item in self.sub_sequence])
 
         if not full_content or not sub_content:
@@ -55,7 +55,10 @@ class DocumentItem:
             
         for child in node:
             if child.tag == "文字":
-                content = child.text
+                if child.text:
+                    content = child.text
+                else:
+                    content = ""
             elif child.tag == "條列":
                 sub_sequences.append(cls.from_node(child)) # Recursively parse the sub sequences.
         
@@ -94,17 +97,21 @@ class Section(DocumentItem):
         # Initial check.
         assert node.tag == "段落", "The node must be a paragraph."
 
+        # Remove unnecessary colon, too ugly, who set an attribute like this?????????
         section_type: str = node.attrib.get("段名").replace("：", "")
         content: str = ""
         sub_sequences: list[DocumentItem] = []
-
 
         if not section_type:
             section_type = ""
             
         for child in node: # We follows the same logic as DocumentItem.
             if child.tag == "文字":
-                content = child.text
+                if child.text:
+                    content = child.text
+                else:
+                    content = ""
+                    
             elif child.tag == "條列":
                 sub_sequences.append(DocumentItem.from_node(child)) # Recursively parse the sub sequences.
         
@@ -128,13 +135,17 @@ class Document:
 
         document_type = root_node.tag
 
+        # Check if the document type is supported.
+        if document_type not in ["函", "簽"]:
+            raise UnsupportedDocumentType(f"Document type {document_type} is not supported.")
+
+        # Parse organization.
         if document_type == "簽":
             organization = root_node.find("機關")[0].text
         elif document_type == "函":
             organization = root_node.find("發文機關")[0].text
-        else:
-            raise ValueError("The document type is not supported.")
 
+        # Parse date.
         if document_type == "函":
             date = root_node.find("發文日期").find("年月日").text
         elif document_type == "簽":
