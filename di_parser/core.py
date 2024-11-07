@@ -121,6 +121,38 @@ class Section(DocumentItem):
         return ret
 
 @dataclass
+class Receiver:
+    """
+    The data structure for the receiver of the document.
+    """
+
+    receiver_type: str # Something like "正本" or "副本".
+    title: str
+
+    def __str__(self):
+        if self.title == "":
+            return ""
+        
+        return f"{self.receiver_type} | {self.title}"
+    
+    @classmethod
+    def from_node(cls, node: ET.Element) -> "Receiver":
+        """
+        Given a root node of receiver, return a Receiver object.
+        """
+
+        # Initial check.
+        assert node.tag in ["正本", "副本"], f"Invalid receiver node type {node.tag}."
+
+        receiver_type = node.tag
+        try:
+            title = node.find("全銜").text
+        except AttributeError:
+            title = ""
+
+        return cls(receiver_type=receiver_type, title=title)
+
+@dataclass
 class Document:
     document_type: str
     organization: str
@@ -128,9 +160,21 @@ class Document:
     subject: str
     description: Section
     act: Optional[Section]
+    receiver: Optional[tuple[Receiver, ...]] = None
 
     def __str__(self):
-        return f"{self.document_type} | {self.organization} | {self.date}\n{self.subject}\n{str(self.description)}{"\n" + str(self.act) if self.act else ""}"
+
+        receiver_str = ""
+        if self.receiver:
+            receiver_str = "\n".join([str(r) for r in self.receiver])
+    
+        # Building return string.
+        return_str = f"{self.document_type} | {self.organization} | {self.date}\n{self.subject}\n" + \
+            f"{str(self.description)}" + \
+            f"{'\n' + str(self.act) if self.act else ""}" + \
+            f"{'\n' + receiver_str if receiver_str else ""}"
+        
+        return return_str
     
     @classmethod
     def from_node(cls, root_node: ET.Element) -> "Document":
@@ -164,8 +208,19 @@ class Document:
                 description = Section.from_node(sect)
             elif sect.attrib.get("段名") == "擬辦：":
                 act = Section.from_node(sect)
+
+        # Parse receiver.
+        if document_type == "函":
+            receiver_list = []
+            receiver_tags = ["正本", "副本"]
+            for tag in receiver_tags:
+                receiver_node = root_node.find(tag)
+                if receiver_node is not None:
+                    receiver_list.append(Receiver.from_node(receiver_node))
+        else:
+            receiver_list = None
         
-        return cls(document_type=document_type, organization=organization, date=date, subject=subject, description=description, act=act)
+        return cls(document_type=document_type, organization=organization, date=date, subject=subject, description=description, act=act, receiver=tuple(receiver_list) if receiver_list else None)
     
 def document_from_xml(string_or_pathlike: Union[str, Path, IO[str]]) -> Document:
     """
