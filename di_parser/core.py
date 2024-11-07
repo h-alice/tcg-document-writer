@@ -24,24 +24,34 @@ class DocumentItem:
 
         self.sub_sequence = tuple(sub_sequence)
 
-    def __str__(self):
+    def stringify(self, overwrite_sequence_bullet: Optional[str] = None) -> str:
+        """
+        Convert the DocumentItem object to a string.
+        """
 
         seprator = "\n"
 
         if not self.content:
             # We assume these's no such case that content is empty but sequence number is there.
             full_content = ""
-        else: # If there's content, add a space between the sequence number and the content.
-            full_content = f"{self.sequence} {self.content}"
+        else:
+            if overwrite_sequence_bullet: # If we want to overwrite the sequence bullet to something else.
+                full_content = f"{overwrite_sequence_bullet} {self.content}"
+            else:
+                full_content = f"{self.sequence} {self.content}"
 
         # Recursively stringify the items in the subSequence.
-        sub_content = "\n".join([str(item) for item in self.sub_sequence])
+        sub_content = "\n".join([item.stringify() for item in self.sub_sequence])
 
         if not full_content or not sub_content:
             # If either of them are empty, we don't need a new line.
             seprator = ""
 
         return full_content + seprator + sub_content
+
+    def __str__(self):
+
+        return self.stringify() # Just call the stringify method without overwriting the sequence bullet.
     
     @classmethod
     def from_node(cls, node: ET.Element) -> "DocumentItem":
@@ -77,18 +87,22 @@ class Section(DocumentItem):
         super().__init__(section_type, content, sub_sequence)
         self.section_type = section_type
 
-    def __str__(self):
 
+    def stringify(self, overwrite_sequence_bullet: Optional[str] = None, ignore_section_type: bool = False) -> str:
+        
         seprator = "\n"
 
         # Recursively stringify the items in the subSequence.
-        sub_content = "\n".join([str(item) for item in self.sub_sequence])
+        sub_content = "\n".join([item.stringify(overwrite_sequence_bullet=overwrite_sequence_bullet) for item in self.sub_sequence])
 
         if not self.content or not sub_content:
             # If either of them are empty, we don't need a new line.
             seprator = ""
 
-        return self.section_type + "：" + "\n" + self.content + seprator + sub_content
+        return f"{self.section_type + '：\n' if not ignore_section_type else ''}" + self.content + seprator + sub_content
+
+    def __str__(self):
+        return self.stringify()
     
     @classmethod
     def from_node(cls, node: ET.Element) -> "Section":
