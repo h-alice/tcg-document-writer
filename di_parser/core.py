@@ -41,7 +41,7 @@ class DocumentItem:
                 full_content = f"{self.sequence} {self.content}"
 
         # Recursively stringify the items in the subSequence.
-        sub_content = "\n".join([item.stringify() for item in self.sub_sequence])
+        sub_content = "\n".join([item.stringify(overwrite_sequence_bullet=overwrite_sequence_bullet) for item in self.sub_sequence])
 
         if not full_content or not sub_content:
             # If either of them are empty, we don't need a new line.
