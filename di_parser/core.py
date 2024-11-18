@@ -213,11 +213,17 @@ class Document:
 
         # Parse date.
 
-        if document_type == "函":
-            date = root_node.find("發文日期").find("年月日").text
-        elif document_type == "簽":
-            date = root_node.find("年月日").text
+        try:
+            if document_type == "函":
+                date = root_node.find("發文日期").find("年月日").text
+            elif document_type == "簽":
+                date = root_node.find("年月日").text
+        except TypeError: # Handle no date.
+            date = None
+        except AttributeError: 
+            date = None
 
+        # Parse subject.
         subject = root_node.find("主旨").find("文字").text
 
 
