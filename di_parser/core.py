@@ -169,8 +169,8 @@ class Receiver:
 @dataclass
 class Document:
     document_type: str
-    organization: str
-    date: str # TODO: Implement a date object.
+    organization: Optional[str]
+    date: Optional[str] # TODO: Implement a date object.
     subject: str
     description: Section
     act: Optional[Section]
@@ -183,7 +183,7 @@ class Document:
             receiver_str = "\n".join([str(r) for r in self.receiver])
     
         # Building return string.
-        return_str = f"{self.document_type} | {self.organization} | {self.date}\n{self.subject}\n" + \
+        return_str = f"{self.document_type} | {self.organization if self.organization else "<n/a>"} | {self.date if self.date else "<n/a>"}\n{self.subject}\n" + \
             f"{str(self.description)}" + \
             f"{'\n' + str(self.act) if self.act else ""}" + \
             f"{'\n' + receiver_str if receiver_str else ""}"
@@ -201,11 +201,18 @@ class Document:
 
         # Parse organization.
         if document_type == "簽":
-            organization = root_node.find("機關")[0].text
+            organization_node = root_node.find("機關")
         elif document_type == "函":
-            organization = root_node.find("發文機關")[0].text
+            organization_node = root_node.find("發文機關")
+
+        if organization_node is not None:
+            organization = organization_node[0].text
+        else:
+            organization = None
+
 
         # Parse date.
+
         if document_type == "函":
             date = root_node.find("發文日期").find("年月日").text
         elif document_type == "簽":
