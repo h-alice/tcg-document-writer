@@ -24,6 +24,10 @@ class DocumentItem:
 
         self.sub_sequence = tuple(sub_sequence)
 
+    def is_empty(self) -> bool:
+        return not self.content and not self.sub_sequence
+        
+
     def stringify(self, overwrite_sequence_bullet: Optional[str] = None) -> str:
         """
         Convert the DocumentItem object to a string.
