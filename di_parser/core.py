@@ -39,7 +39,7 @@ class DocumentItem:
             # We assume these's no such case that content is empty but sequence number is there.
             full_content = ""
         else:
-            if overwrite_sequence_bullet: # If we want to overwrite the sequence bullet to something else.
+            if overwrite_sequence_bullet != None: # If we want to overwrite the sequence bullet to something else.
                 full_content = f"{overwrite_sequence_bullet} {self.content}"
             else:
                 full_content = f"{self.sequence} {self.content}"
