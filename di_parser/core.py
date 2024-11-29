@@ -212,9 +212,9 @@ class Document:
 
         # Building return string.
         return_str = f"{self.document_type} | {org_str} | {date_str}\n" + \
-            f"{str(self.description)}" + \
-            f"{act_str_with_newline}" + \
-            f"{receiver_str_with_newline}"
+                     f"{str(self.description)}" + \
+                     f"{act_str_with_newline}" + \
+                     f"{receiver_str_with_newline}"
         
         return return_str
     
