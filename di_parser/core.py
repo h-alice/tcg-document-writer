@@ -185,12 +185,36 @@ class Document:
         receiver_str = ""
         if self.receiver:
             receiver_str = "\n".join([str(r) for r in self.receiver])
-    
+
+        receiver_str_with_newline = ""
+        if receiver_str:
+            receiver_str_with_newline = "\n" + receiver_str
+        else:
+            receiver_str_with_newline = ""
+
+        org_str = ""
+        if self.organization:
+            org_str = self.organization
+        else:
+            org_str = "<n/a>"
+
+        date_str = ""
+        if self.date:
+            date_str = self.date
+        else:
+            date_str = "<n/a>"
+
+        act_str_with_newline = ""
+        if self.act:
+            act_str_with_newline = "\n" + str(self.act)
+        else:
+            act_str_with_newline = ""
+
         # Building return string.
-        return_str = f"{self.document_type} | {self.organization if self.organization else "<n/a>"} | {self.date if self.date else "<n/a>"}\n{self.subject}\n" + \
+        return_str = f"{self.document_type} | {org_str} | {date_str}\n" + \
             f"{str(self.description)}" + \
-            f"{'\n' + str(self.act) if self.act else ""}" + \
-            f"{'\n' + receiver_str if receiver_str else ""}"
+            f"{act_str_with_newline}" + \
+            f"{receiver_str_with_newline}"
         
         return return_str
     
