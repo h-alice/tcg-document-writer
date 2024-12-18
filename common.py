@@ -9,7 +9,7 @@ def stringify_md(doc: Document) -> str:
     return_str += f"## 主旨\n"
     return_str += f"{doc.subject}\n"
     return_str += f"## 說明\n"
-    return_str += f"{doc.description.stringify("-", ignore_section_type=True)}\n"
+    return_str += f"{doc.description.stringify('-', ignore_section_type=True)}\n"
 
     if doc.act:
         return_str += f"## 擬辦\n"

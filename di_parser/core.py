@@ -94,6 +94,8 @@ class Section(DocumentItem):
 
     def stringify(self, overwrite_sequence_bullet: Optional[str] = None, ignore_section_type: bool = False) -> str:
         
+        section_type = self.section_type + '：\n' if not ignore_section_type else ''
+
         seprator = "\n"
 
         # Recursively stringify the items in the subSequence.
@@ -103,7 +105,7 @@ class Section(DocumentItem):
             # If either of them are empty, we don't need a new line.
             seprator = ""
 
-        return f"{self.section_type + '：\n' if not ignore_section_type else ''}" + self.content + seprator + sub_content
+        return f"{section_type}" + self.content + seprator + sub_content
 
     def __str__(self):
         return self.stringify()
