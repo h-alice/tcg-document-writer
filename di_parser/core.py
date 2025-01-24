@@ -214,6 +214,7 @@ class Document:
 
         # Building return string.
         return_str = f"{self.document_type} | {org_str} | {date_str}\n" + \
+                     f"主旨：{self.subject}\n" + \
                      f"{str(self.description)}" + \
                      f"{act_str_with_newline}" + \
                      f"{receiver_str_with_newline}"
